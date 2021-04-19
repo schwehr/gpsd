@@ -118,13 +118,13 @@ def retrieve():
             txt = ifp.read()
             ifp.close()
             if verbose:
-                print >>sys.stderr, "%s" % txt
+                sys.stderr.write( "%s" % txt)
             m = re.search(regexp, txt)
             if m:
                 return int(m.group(1)) * sign - offset
         except IOError:
             if verbose:
-                print >>sys.stderr, "IOError: %s" % url
+                sys.stderr.write( "IOError: %s" % url)
     return None
 
 def last_insertion_time():
@@ -159,14 +159,14 @@ def save_leapseconds(outfile):
         try:
             fetchobj = urllib.urlopen(url)
         except IOError:
-            print >>sys.stderr, "Fetch from %s failed." % url
+            sys.stderr.write( "Fetch from %s failed." % url)
             continue
         # This code assumes that after 1980, leap-second increments are
         # always integrally one second and every increment is listed here
         fp = open(outfile, "w")
         for line in fetchobj:
             if verbose:
-                print >>sys.stderr, "%s" % line[:-1]
+                sys.stderr.write( "%s" % line[:-1])
             if line.startswith(" 1980"):
                 skip = False
             if skip:
@@ -176,11 +176,11 @@ def save_leapseconds(outfile):
                 continue
             md = leapbound(fields[0], fields[1])
             if verbose:
-                print >>sys.stderr, "# %s" % md
+                sys.stderr.write( "# %s" % md)
             fp.write(repr(iso_to_unix(md)) + "\t# " + str(md)  + "\n")
         fp.close()
         return
-    print >>sys.stderr, "%s not updated." % outfile
+    sys.stderr.write( "%s not updated." % outfile)
 
 def fetch_leapsecs(filename):
     "Get a list of leap seconds from the local cache of the USNO history"
@@ -301,7 +301,7 @@ def graph_history(filename):
     for (i, (r, d)) in enumerate(zip(raw, dates)):
         fmt += "%d\t%s\t%s\n" % (i, r, d)
     fmt += 'e\n'
-    print fmt
+    print (fmt)
 
 def rfc822_to_unix(tv):
     "Local Unix time to RFC822 date."
@@ -314,24 +314,24 @@ def unix_to_rfc822(tv):
 def printnext(val):
     "Compute Unix time correponsing to a scheduled leap second."
     if val[:3].lower() not in ("jun", "dec"):
-        print >>sys.stderr, "leapsecond.py: -n argument must begin with "\
-              "'Jun' or 'Dec'"
-        raise SystemExit, 1
+        sys.stderr.write( "leapsecond.py: -n argument must begin with "\
+              "'Jun' or 'Dec'")
+        raise (SystemExit, 1)
     else:
         month = val[:3].lower()
         if len(val) != 7:
-            print >>sys.stderr, "leapsecond.py: -n argument must be of "\
-                  "the form {jun|dec}nnnn."
-            raise SystemExit, 1
+            sys.stderr.write( "leapsecond.py: -n argument must be of "\
+                  "the form {jun|dec}nnnn.")
+            raise (SystemExit, 1)
         try:
             year = int(val[3:])
         except ValueError:
-            print >>sys.stderr, "leapsecond.py: -n argument must end "\
-                  "with a 4-digit year."
-            raise SystemExit, 1
+            sys.stderr.write( "leapsecond.py: -n argument must end "\
+                  "with a 4-digit year.")
+            raise (SystemExit, 1)
         # Date looks valid
         tv = leapbound(year, month)
-        print "%d       /* %s */" % (iso_to_unix(tv), tv)
+        print ("%d       /* %s */" % (iso_to_unix(tv), tv))
 
 def leapbound(year, month):
     "Return a leap-second date in RFC822 form."
@@ -350,8 +350,8 @@ def leapbound(year, month):
 # Main part
 
 def usage():
-    print __doc__
-    raise SystemExit, 0
+    print (__doc__)
+    raise (SystemExit, 0)
 
 if __name__ == '__main__':
     import getopt
@@ -363,27 +363,27 @@ if __name__ == '__main__':
             verbose=1
         elif switch == '-f':    # Fetch USNO data to cache locally
             save_leapseconds(val)
-            raise SystemExit, 0
+            raise (SystemExit, 0)
         elif switch == '-g':  # Graph the leap_second history
             graph_history(val)
-            raise SystemExit, 0
+            raise (SystemExit, 0)
         elif switch == '-H':  # make leapsecond include
             sys.stdout.write(make_leapsecond_include(val))
-            raise SystemExit, 0
+            raise (SystemExit, 0)
         elif switch == '-i':  # Compute Unix time from RFC822 date
-            print rfc822_to_unix(val)
-            raise SystemExit, 0
+            print (rfc822_to_unix(val))
+            raise (SystemExit, 0)
         elif switch == '-n':  # Compute possible next leapsecond
             printnext(val)
-            raise SystemExit, 0
+            raise (SystemExit, 0)
         elif switch == '-o':  # Compute RFC822 date from Unix time
-            print unix_to_rfc822(float(val))
-            raise SystemExit, 0
+            print (unix_to_rfc822(float(val)))
+            raise (SystemExit, 0)
         elif switch == '-I':  # Compute Unix time from ISO8601 date
-            print isotime(val)
-            raise SystemExit, 0
+            print (isotime(val))
+            raise (SystemExit, 0)
         elif switch == '-O':  # Compute ISO8601 date from Unix time
-            print isotime(float(val))
-            raise SystemExit, 0
+            print (isotime(float(val)))
+            raise (SystemExit, 0)
 
 # End

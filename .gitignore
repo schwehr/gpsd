@@ -17,12 +17,9 @@ gps2udp
 gpscat
 gpsfake
 gpsprof
-jsongen.py
-maskaudit.py
 control
 upload
 gpsd.php
-valgrind-audit.py
 # Unit tests
 test_float
 test_bits
